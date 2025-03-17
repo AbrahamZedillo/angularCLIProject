@@ -1,0 +1,127 @@
+<div class="container mt-3">
+    <h2>Users</h2>
+    <input type="text" class="form-control mb-3" placeholder="Search..." [(ngModel)]="searchTerm" (input)="filterData()">
+  
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>More Information</th>
+            <th>Blog</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(user of paginatedData; track user.id) {
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <button class="btn btn-info" (click)="showMoreInfo(user)">More Info</button>
+                </td>
+                <td>
+                  <button class="btn btn-primary" (click)="getDataPosts(user.id)">Blog</button>
+                </td>
+              </tr>
+          }
+      </tbody>
+    </table>
+  
+    <nav>
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" (click)="changePage(currentPage - 1)">Previous</a>
+        </li>
+        @for(page of totalPagesArray; track page) {
+            <li class="page-item" [class.active]="page === currentPage">
+                <a class="page-link" (click)="changePage(page)">{{ page }}</a>
+            </li>
+        }
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="infoModalLabel">User Information</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <p><strong>Address:</strong></p>
+            <p>{{ selectedUser?.address?.street }}, {{ selectedUser?.address?.suite }}</p>
+            <p>{{ selectedUser?.address?.city }}, {{ selectedUser?.address?.zipcode }}</p>
+            <p><strong>Company:</strong></p>
+            <p>{{ selectedUser?.company?.name }}</p>
+            <p>{{ selectedUser?.company?.catchPhrase }}</p>
+            <p>{{ selectedUser?.company?.bs }}</p>
+            <p><strong>Map:</strong></p>
+            <iframe
+                width="100%"
+                height="300"
+                frameborder="0"
+                style="border:0"
+                [src]="mapUrl"
+                allowfullscreen>
+            </iframe>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Blog Posts Card -->
+    @if(showPosts){
+        <div class="card mt-3">
+            <div class="card-header">
+            <h5>Blog Posts</h5>
+            </div>
+            <div class="card-body">
+            @for(post of dataPost; track post.id) {
+                <div class="mb-3">
+                    <h6>{{ post.title }}</h6>
+                    <p>{{ post.body }}</p>
+                    <button class="btn btn-secondary" (click)="getDataComments(post.id)">View Comments</button>
+                </div>
+            }
+            </div>
+        </div>
+    }
+
+    <!-- Comments Modal -->
+    <div class="modal fade" id="commentsModal" tabindex="-1" role="dialog" aria-labelledby="commentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="commentsModalLabel">Comments for Post: {{ selectedPost?.title }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <div class="mb-3">
+                @for(comment of dataComment; track comment.id) {
+                    <h6>{{ comment.name }} ({{ comment.email }})</h6>
+                    <p>{{ comment.body }}</p>
+                }
+            </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
